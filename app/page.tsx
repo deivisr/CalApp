@@ -1,9 +1,16 @@
 import Image from "next/image";
+import { Navbar } from "./components/Navbar";
+import { auth } from "@/app/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth()
+  if(session) {
+    return redirect("/dashboard")
+  }
   return (
-    <div>
-      <h1>Hello World</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Navbar />
     </div>
   );
 }
