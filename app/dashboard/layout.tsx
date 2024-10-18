@@ -7,11 +7,16 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { ThemeToggle } from "../components/ThemeToggle";
-import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { auth } from "../lib/auth";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { auth, signOut } from "../lib/auth";
+import { requireAuth } from "../lib/hooks";
 
-export default async function DashboardLayout({children}: {children: ReactNode}) {
-    const session = await auth()
+export default async function DashboardLayout({
+    children,
+}: {
+    children: ReactNode
+}) {
+    const session = await requireAuth();
     return (
         <>
             <div className="min-h-screen w-full grid md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]" > 
@@ -50,13 +55,25 @@ export default async function DashboardLayout({children}: {children: ReactNode})
                             <ThemeToggle />
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button size="icon" variant="outline">
-                                        <img src={session?.user?.image as string} alt="Profile Image" className="size-8 rounded-full" />
+                                    <Button size="icon" variant="secondary" className="rounded-full">
+                                        <img src={session?.user?.image as string} alt="Profile Image" className="size-5 rounded-full w-full h-full" />
                                     </Button>
                                 </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem asChild><Link href="/dashboard/settings">Settings</Link></DropdownMenuItem>
+                                    <DropdownMenuItem asChild><form className="w-full" action={async () => {
+                                        "use server"
+                                        await signOut();
+                                    }}><button className="w-full text-left">Sign Out</button></form></DropdownMenuItem>
+                                </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
                     </header>
+                    <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+                        {children}
+                    </main>
                 </div>
             </div>
         </>
