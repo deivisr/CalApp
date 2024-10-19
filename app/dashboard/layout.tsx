@@ -20,12 +20,15 @@ async function getData(userId: string) {
         },
         select: {
             userName: true,
+            grantId: true,
         },
     });
     if(!data?.userName) {
         return redirect("/onboarding");
     }
-    return data;
+    if(!data?.grantId){
+        return redirect("/onboarding/grant-id");
+    }
 }
 
 export default async function DashboardLayout({
